@@ -27,7 +27,7 @@ A few presets for popular games:
 
 | Game                     | Color                               |
 | ------------------------ | ----------------------------------- |
-| Point Blank (PSX)        | #FFDEDEDE (White/Grey, 222 222 222) |
-| Project Horned Owl (PSX) | #FF000CC7 (Blue,	0 12 199)          |
-| Time Crisis (PSX)        | #FFF8F8F8 (White, 248 248 248)      |
-| Time Crisis 2 (PS2)      | #FF838383 (Grey, 131 131 131)       |
+| Point Blank (PSX)        | #DEDEDE (White/Grey, 222 222 222) |
+| Project Horned Owl (PSX) | #000CC7 (Blue,	0 12 199)          |
+| Time Crisis (PSX)        | #F8F8F8 (White, 248 248 248)      |
+| Time Crisis 2 (PS2)      | #838383 (Grey, 131 131 131)       |

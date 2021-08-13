@@ -34,7 +34,7 @@ find_path(LIBOBS_INCLUDE_DIR
 	PATHS
 		/usr/include /usr/local/include /opt/local/include /sw/include
 	PATH_SUFFIXES
-		libobs
+		libobs obs
 	)
 
 function(find_obs_lib base_name repo_build_path lib_name)
@@ -95,7 +95,7 @@ if(LIBOBS_FOUND)
 
 	set(LIBOBS_INCLUDE_DIRS ${LIBOBS_INCLUDE_DIR} ${W32_PTHREADS_INCLUDE_DIR})
 	set(LIBOBS_LIBRARIES ${LIBOBS_LIB} ${W32_PTHREADS_LIB})
-	include(${LIBOBS_INCLUDE_DIR}/../cmake/external/ObsPluginHelpers.cmake)
+	include("${CMAKE_CURRENT_SOURCE_DIR}/external/ObsPluginHelpers.cmake")
 
 	# allows external plugins to easily use/share common dependencies that are often included with libobs (such as FFmpeg)
 	if(NOT DEFINED INCLUDED_LIBOBS_CMAKE_MODULES)

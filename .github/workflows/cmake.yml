@@ -1,35 +1,83 @@
 name: CMake
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  build_config: Release
 
 jobs:
-  build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
-    # cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
+  build_windows:
+    runs-on: windows-latest
 
-      # BUILD_REASON: $(Build.Reason)
-      # BRANCH_SHORT_NAME: $(Build.SourceBranchName)
-      # BRANCH_FULL_NAME: $(Build.SourceBranch)
+    defaults:
+      run:
+        shell: cmd
+
+    env:
+      DepsBasePath: 'D:\obs-deps'
+      DepsPath32: 'D:\obs-deps\win32'
+      DepsPath64: 'D:\obs-deps\win64'
+      QtBaseDir: 'D:\QtDep'
+      QTDIR32: 'D:\QtDep\5.10.1\msvc2017'
+      QTDIR64: 'D:\QtDep\5.10.1\msvc2017_64'
+      OBSPath: 'D:\obs-studio'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Qt
+      run: ./ci/windows/install-qt-win.cmd
+
+    - name: Download OBS Studio dependencies
+      run: ./ci/windows/download-obs-deps.cmd
+
+    - name: Checkout & CMake OBS Studio
+      run: ./ci/windows/prepare-obs-windows.cmd
+
+    - name: Build libobs 32-bit
+      run: cmake --build build32/libobs --config ${{env.build_config}}
+      working-directory: ${{env.OBSPath}}
+
+    - name: Build libobs 64-bit
+      run: cmake --build build64/libobs --config ${{env.build_config}}
+      working-directory: ${{env.OBSPath}}
+
+    - name: CMake Plugin
+      run: ./ci/windows/prepare-windows.cmd
+
+    - name: Build Plugin 32-bit
+      run: cmake --build build32 --config ${{env.build_config}}
+
+    - name: Build Plugin 64-bit
+      run: cmake --build build64 --config ${{env.build_config}}
+
+    - name: Package Plugin
+      run: ./ci/windows/package-windows.cmd
+      
+    - name: Upload Build
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: windows-build
+        path: ./package/*
+
+  build_linux:
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Install dependencies
-      run: ./ci/linux/install-dependencies-ubuntu.sh
+      run: bash ./ci/linux/install-dependencies-ubuntu.sh
 
     - name: Build Plugin
-      run: ./ci/linux/build-ubuntu.sh
+      run: bash ./ci/linux/build-ubuntu.sh
 
     - name: Package Plugin
-      run: ./ci/linux/package-ubuntu.sh
+      run: bash ./ci/linux/package-ubuntu.sh
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: linux-build
+        path: ./package/obs-screen-flash-filter_0-1_amd64.deb

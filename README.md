@@ -6,6 +6,10 @@ to provide a regular OBS plugin instead of requiring a modified OBS build.
 Note that the filter requires tuning for each game to recognize the flashes correctly. It is very much recommended to try out the game ahead of time,
 and adjust the filter color and threshold to make sure that it is effective in reducing flashing.
 
+### Sample video (click to view on Youtube)
+
+[![Youtube video: OBS Lightgun Flash Filter sample - Time Crisis (PSX)](https://img.youtube.com/vi/dI5os4Ajf4o/0.jpg)](https://www.youtube.com/watch?v=dI5os4Ajf4o)
+
 # Installation
 
 Download from the [Releases page](https://github.com/mooware/OBS-Studio-Flash-Filter/releases).

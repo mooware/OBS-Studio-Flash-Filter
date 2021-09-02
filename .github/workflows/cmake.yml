@@ -26,6 +26,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Cache Windows dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{env.OBSPath}}
+        key: ${{ runner.os }}-windows-build-deps
+
     - name: Install Qt
       run: ./ci/windows/install-qt-win.cmd
 

@@ -1,5 +1,7 @@
 # OBS Lightgun Flash Filter
 
+**NOTE: The original dev of this filter made a newer one which might work better for you, see here:** https://www.puripuri.live/category/lightgun-flash-filter/
+
 OBS plugin that provides a flashing filter for lightgun games. Forked from the original implementation (https://github.com/puri-puri/OBS-Studio-Flash-Filter)
 to provide a regular OBS plugin instead of requiring a modified OBS build.
 

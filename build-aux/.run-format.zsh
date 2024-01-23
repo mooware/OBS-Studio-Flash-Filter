@@ -103,6 +103,8 @@ invoke_formatter() {
 
       if ! "${formatter}" ${format_args} "${file}" | diff -q "${file}" - &> /dev/null; then
         log_error "${file} requires formatting changes."
+        "${formatter}" ${format_args} "${file}" > "${file}_new"
+        diff -u "${file}" "${file}_new"
 
         if (( fail_on_error == 2 )) return 2;
         num_failures=$(( num_failures + 1 ))

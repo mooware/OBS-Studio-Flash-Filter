@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <obs.h>
 #include <util/platform.h>
 
-
 struct screen_flash_filter_data {
     obs_source_t *context;
 
@@ -75,7 +74,7 @@ static void screen_flash_filter_update(void *data, obs_data_t *settings)
     double threshold1 = obs_data_get_double(settings, "threshold1");
     filter->threshold1 = (float)threshold1;
 
-    uint32_t CT = (uint32_t)obs_data_get_int(settings,"colorTarget");
+    uint32_t CT = (uint32_t)obs_data_get_int(settings, "colorTarget");
     vec4_from_rgba(&filter->colorTarget, CT);
 }
 
@@ -104,8 +103,7 @@ static void screen_flash_filter_destroy(void *data)
 
 static void *screen_flash_filter_create(obs_data_t *settings, obs_source_t *context)
 {
-    struct screen_flash_filter_data *filter =
-        bzalloc(sizeof(struct screen_flash_filter_data));
+    struct screen_flash_filter_data *filter = bzalloc(sizeof(struct screen_flash_filter_data));
     char *effect_path = obs_module_file("screen_flash_filter.effect");
 
     filter->firstRun = true;
@@ -116,8 +114,7 @@ static void *screen_flash_filter_create(obs_data_t *settings, obs_source_t *cont
     obs_enter_graphics();
 
     filter->effect = gs_effect_create_from_file(effect_path, NULL);
-    if (filter->effect)
-    {
+    if (filter->effect) {
         filter->currentRender = gs_texrender_create(GS_RGBA, GS_ZS_NONE);
 
         filter->currentTex1 = gs_texrender_get_texture(gs_texrender_create(GS_RGBA, GS_ZS_NONE));
@@ -142,16 +139,11 @@ static void *screen_flash_filter_create(obs_data_t *settings, obs_source_t *cont
     return filter;
 }
 
-
-
 static void screen_flash_filter_tick(void *data, float t)
 {
     UNUSED_PARAMETER(data);
     UNUSED_PARAMETER(t);
 }
-
-
-
 
 static void screen_flash_filter_render(void *data, gs_effect_t *effect)
 {
@@ -160,21 +152,25 @@ static void screen_flash_filter_render(void *data, gs_effect_t *effect)
     obs_source_t *target = obs_filter_get_target(filter->context);
     obs_source_t *parent = obs_filter_get_parent(filter->context);
 
-    if(filter->currentRender != NULL) filter->currentTex1 = gs_texrender_get_texture(filter->currentRender);
-    if (filter->oldRender1 != NULL)    filter->oldTex1 = gs_texrender_get_texture(filter->oldRender1);
-    if (filter->oldRender2 != NULL) filter->oldTex2 = gs_texrender_get_texture(filter->oldRender2);
-    if (filter->oldRender3 != NULL) filter->oldTex3 = gs_texrender_get_texture(filter->oldRender3);
-    if (filter->oldRender4 != NULL) filter->oldTex4 = gs_texrender_get_texture(filter->oldRender4);
-    if (filter->oldRender5 != NULL) filter->oldTex5 = gs_texrender_get_texture(filter->oldRender5);
+    if (filter->currentRender != NULL)
+        filter->currentTex1 = gs_texrender_get_texture(filter->currentRender);
+    if (filter->oldRender1 != NULL)
+        filter->oldTex1 = gs_texrender_get_texture(filter->oldRender1);
+    if (filter->oldRender2 != NULL)
+        filter->oldTex2 = gs_texrender_get_texture(filter->oldRender2);
+    if (filter->oldRender3 != NULL)
+        filter->oldTex3 = gs_texrender_get_texture(filter->oldRender3);
+    if (filter->oldRender4 != NULL)
+        filter->oldTex4 = gs_texrender_get_texture(filter->oldRender4);
+    if (filter->oldRender5 != NULL)
+        filter->oldTex5 = gs_texrender_get_texture(filter->oldRender5);
 
     gs_eparam_t *param;
 
-    if (!parent || !target)
-    {
+    if (!parent || !target) {
         obs_source_skip_video_filter(filter->context);
         return;
     }
-
 
     //effect filter
     if (!obs_source_process_filter_begin(filter->context, GS_RGBA, OBS_ALLOW_DIRECT_RENDERING))
@@ -203,9 +199,6 @@ static void screen_flash_filter_render(void *data, gs_effect_t *effect)
 
     obs_source_process_filter_end(filter->context, filter->effect, 0, 0);
 
-
-
-
     uint32_t cx;
     uint32_t cy;
 
@@ -217,7 +210,7 @@ static void screen_flash_filter_render(void *data, gs_effect_t *effect)
 
     filter->currentRender = NULL;
 
-    gs_texrender_t *texRender1 = gs_texrender_create(GS_RGBA, GS_ZS_NONE); 
+    gs_texrender_t *texRender1 = gs_texrender_create(GS_RGBA, GS_ZS_NONE);
     filter->currentRender = texRender1;
 
     gs_texrender_reset(filter->currentRender);
@@ -230,15 +223,14 @@ static void screen_flash_filter_render(void *data, gs_effect_t *effect)
 
         vec4_zero(&clear_color);
         gs_clear(GS_CLEAR_COLOR, &clear_color, 0.0f, 0);
-        gs_ortho(0.0f, (float)filter->cx, 0.0f, (float)filter->cy,-100.0f, 100.0f);
-        
+        gs_ortho(0.0f, (float)filter->cx, 0.0f, (float)filter->cy, -100.0f, 100.0f);
+
         obs_source_video_render(target);
 
         gs_texrender_end(filter->currentRender);
     }
 
     gs_blend_state_pop();
-
 
     gs_texrender_destroy(filter->oldRender5);
 
@@ -283,16 +275,14 @@ static void screen_flash_filter_defaults(obs_data_t *settings)
     obs_data_set_default_int(settings, "colorTarget", 0xFFFFFFFF);
 }
 
-struct obs_source_info screen_flash_filter = {
-    .id = "screen_flash_filter",
-    .type = OBS_SOURCE_TYPE_FILTER,
-    .output_flags = OBS_SOURCE_VIDEO,
-    .get_name = screen_flash_filter_getname,
-    .create = screen_flash_filter_create,
-    .destroy = screen_flash_filter_destroy,
-    .update = screen_flash_filter_update,
-    .video_render = screen_flash_filter_render,
-    .video_tick = screen_flash_filter_tick,
-    .get_properties = screen_flash_filter_properties,
-    .get_defaults = screen_flash_filter_defaults
-};
+struct obs_source_info screen_flash_filter = {.id = "screen_flash_filter",
+                                              .type = OBS_SOURCE_TYPE_FILTER,
+                                              .output_flags = OBS_SOURCE_VIDEO,
+                                              .get_name = screen_flash_filter_getname,
+                                              .create = screen_flash_filter_create,
+                                              .destroy = screen_flash_filter_destroy,
+                                              .update = screen_flash_filter_update,
+                                              .video_render = screen_flash_filter_render,
+                                              .video_tick = screen_flash_filter_tick,
+                                              .get_properties = screen_flash_filter_properties,
+                                              .get_defaults = screen_flash_filter_defaults};
